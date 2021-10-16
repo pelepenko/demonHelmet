@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<npc name="Rayane Addons" script="Addon.lua" walkinterval="0" floorchange="0">
+   <health now="100" max="100"/>
+   <look type="148" head="132" body="52" legs="71" feet="52" addons="3" mount="0"/>
+<parameters>
+	<parameter key="module_shop" value="1" />
+	</parameters>
+
+</npc> 
