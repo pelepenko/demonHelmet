@@ -2258,18 +2258,21 @@ void ProtocolGame::sendCreatureLight(const Creature *creature)
 void ProtocolGame::sendCreatureIcon(const Creature* creature)
 {
 	if (!creature || version < 1200)
-    	return;
-  	CreatureIcon_t icon = creature->getIcon();
-  	NetworkMessage msg;
- 	msg.addByte(0x8B);
-  	msg.add<uint32_t>(creature->getID());
-  	msg.addByte(14); // type 14 for this
-  	msg.addByte(icon != CREATUREICON_NONE); // 0 = no icon, 1 = we'll send an icon
-  	if (icon != CREATUREICON_NONE) {
-    	msg.addByte(icon);
-    	msg.addByte(1); // ???
-    	msg.add<uint16_t>(0); // used for the life in the new quest
-  	}
+    {
+		return;
+	}
+
+	CreatureIcon_t icon = creature->getIcon();
+	NetworkMessage msg;
+	msg.addByte(0x8B);
+	msg.add<uint32_t>(creature->getID());
+	msg.addByte(14); // type 14 for this
+	msg.addByte(icon != CREATUREICON_NONE); // 0 = no icon, 1 = we'll send an icon
+	if (icon != CREATUREICON_NONE) {
+		msg.addByte(icon);
+		msg.addByte(0); // Creature update
+		msg.add<uint16_t>(0); // Used for the life in the new quest
+	}
 	writeToOutputBuffer(msg);
 }
 
@@ -2469,10 +2472,11 @@ void ProtocolGame::sendCyclopediaCharacterGeneralStats()
 	// loyalty bonus
 	msg.add<uint16_t>(player->getBaseMagicLevel());
 	msg.add<uint16_t>(player->getMagicLevelPercent() * 100);
+	
+	// Check if all clients have the same hardcoded skill ids
+	static const uint8_t HardcodedSkillIds[] = { 11, 9, 8, 10, 7, 6, 13 };
 	for (uint8_t i = SKILL_FIRST; i < SKILL_CRITICAL_HIT_CHANCE; ++i)
 	{
-		// check if all clients have the same hardcoded skill ids
-		static const uint8_t HardcodedSkillIds[] = {11, 9, 8, 10, 7, 6, 13};
 		msg.addByte(HardcodedSkillIds[i]);
 		msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i), std::numeric_limits<uint16_t>::max()));
 		msg.add<uint16_t>(player->getBaseSkill(i));
@@ -2480,6 +2484,15 @@ void ProtocolGame::sendCyclopediaCharacterGeneralStats()
 		msg.add<uint16_t>(player->getBaseSkill(i));
 		msg.add<uint16_t>(player->getSkillPercent(i) * 100);
 	}
+	
+	// Version 12.70 start
+	msg.addByte(0x00); // 0x00 -> false, 0x01 -> true
+	// * Feature not implemented yet *
+	// if (true) {
+	//		msg.addByte(); // Element type getCipbiaElement()
+	//		msg.add<uint16_t>(); // Magic boost value
+	// }
+	// Version 12.70 end
 	writeToOutputBuffer(msg);
 }
 
@@ -2494,6 +2507,22 @@ void ProtocolGame::sendCyclopediaCharacterCombatStats()
 		msg.add<uint16_t>(std::min<int32_t>(player->getSkillLevel(i), std::numeric_limits<uint16_t>::max()));
 		msg.add<uint16_t>(0);
 	}
+	
+	// Version 12.70 start
+	msg.add<uint16_t>(0); // Cleave
+	
+	// Magic shield capacity
+	msg.add<uint16_t>(0); // Direct bonus
+	msg.add<uint16_t>(0); // Percentage bonus
+	
+	for (uint16_t i = 1; i <= 5; i++)
+	{
+		msg.add<uint16_t>(0x00); // Perfect shot range
+		}
+
+	msg.add<uint16_t>(0); // Reflection
+	// Version 12.70 end
+	
 	uint8_t haveBlesses = 0;
 	uint8_t blessings = 8;
 	for (uint8_t i = 1; i < blessings; ++i)
@@ -2503,8 +2532,10 @@ void ProtocolGame::sendCyclopediaCharacterCombatStats()
 			++haveBlesses;
 		}
 	}
+	
 	msg.addByte(haveBlesses);
 	msg.addByte(blessings);
+	
 	const Item *weapon = player->getWeapon();
 	if (weapon)
 	{
@@ -2584,6 +2615,7 @@ void ProtocolGame::sendCyclopediaCharacterCombatStats()
 		msg.addByte(0);
 		msg.addByte(CIPBIA_ELEMENTAL_UNDEFINED);
 	}
+	
 	msg.add<uint16_t>(player->getArmor());
 	msg.add<uint16_t>(player->getDefense());
 
@@ -4068,6 +4100,47 @@ void ProtocolGame::sendMarketDetail(uint16_t itemId)
 		}
 		ss << " oz";
 		msg.addString(ss.str());
+	}
+	else
+	{
+		msg.add<uint16_t>(0x00);
+	}
+	
+	// Version 12.70
+	// Magic
+	std::ostringstream string;
+	msg.add<uint16_t>(0x00);
+
+	// Cleave
+	if (it.abilities && it.abilities->cleaveDamage)
+	{
+		string.clear();
+		string << it.abilities->cleaveDamage << "%";
+		msg.addString(string.str());
+	}
+	else
+	{
+		msg.add<uint16_t>(0x00);
+	}
+
+	// Reflection
+	if (it.abilities && it.abilities->reflectDamage)
+	{
+		string.clear();
+		string << it.abilities->reflectDamage;
+		msg.addString(string.str());
+	}
+	else
+	{
+		msg.add<uint16_t>(0x00);
+	}
+
+	// Perf shot
+	if (it.abilities && it.abilities->perfectBonus)
+	{
+		string.clear();
+		string << "+" << it.abilities->perfectBonus << " at range";
+		msg.addString(string.str());
 	}
 	else
 	{
