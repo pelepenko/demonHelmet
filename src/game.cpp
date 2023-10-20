@@ -7410,6 +7410,9 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 		}
 		
 		std::forward_list<Item *> itemList = getMarketItemList(it.wareId, stashmath, depotLocker);
+		if (itemList.empty()) {
+            return;
+        }
 
 		if (!itemList.empty()) {    
 			if (it.stackable) {
