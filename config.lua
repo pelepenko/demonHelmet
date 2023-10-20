@@ -64,6 +64,9 @@ thunderEffect = false
 freeQuests = false
 allConsoleLog = false
 
+-- Timer Reward Bag
+rewardBagDuration = 7200
+
 -- Deaths
 -- NOTE: Leave deathLosePercent as -1 if you want to use the default
 -- death penalty formula. For the old formula, set it to 10. For

@@ -140,7 +140,8 @@ class ConfigManager
 			PUSH_DELAY,
 			PUSH_DISTANCE_DELAY,
 			STASH_ITEMS,
-
+			REWARD_BAG_DURATION,
+			
 			LAST_INTEGER_CONFIG /* this must be the last one */
 		};
 

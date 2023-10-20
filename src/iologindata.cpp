@@ -1162,12 +1162,14 @@ bool IOLoginData::savePlayer(Player* player)
   if (!rewardList.empty()) {
     DBInsert rewardQuery("INSERT INTO `player_rewards` (`player_id`, `pid`, `sid`, `itemtype`, `count`, `attributes`) VALUES ");
     itemList.clear();
+	
+	int rewardBagDuration = g_config.getNumber(ConfigManager::REWARD_BAG_DURATION);
 
     int running = 0;
     for (const auto& rewardId : rewardList) {
       Reward* reward = player->getReward(rewardId, false);
       // rewards that are empty or older than 7 days aren't stored
-      if (!reward->empty() && (time(nullptr) - rewardId <= 60 * 60 * 24 * 7)) {
+      if (!reward->empty() && (time(nullptr) - rewardId <= rewardBagDuration)) {
         itemList.emplace_back(++running, reward);
       }
     }
