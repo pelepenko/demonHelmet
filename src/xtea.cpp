@@ -1,5 +1,5 @@
 /**
- * The Forgotten Server - a free and open-source MMORPG server emulator
+ * Demon Helmet - TFS 1.4 - a free and open-source MMORPG server emulator
  * Copyright (C) 2020  Mark Samman <mark.samman@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
