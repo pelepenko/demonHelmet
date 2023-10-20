@@ -7,10 +7,14 @@ then
 	echo "Clean build directory"
 	rm -rf *
 	echo "Configuring"
-	cmake ..
+	# cmake -DCMAKE_BUILD_TYPE=Debug ..
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+	# cmake ..
 else
 	mkdir "build" && cd build
-	cmake ..
+	# cmake -DCMAKE_BUILD_TYPE=Debug ..
+	cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+	# cmake ..
 fi
 
 make -j$(nproc) || exit 1
