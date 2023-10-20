@@ -1918,6 +1918,7 @@ class Player final : public Creature, public Cylinder
 		int64_t nextPotionAction = 0;
 		int64_t lastQuickLootNotification = 0;
 		int64_t lastWalking = 0;
+		int64_t lastOnEquip = 0;
     uint64_t asyncOngoingTasks = 0;
 
 		std::vector<Kill> unjustifiedKills;

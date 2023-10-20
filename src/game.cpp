@@ -346,6 +346,14 @@ void Game::onPressHotkeyEquip(Player* player, uint16_t spriteid)
 	if (itemType.id == 0) {
 		return;
 	}
+	
+	if (player) {
+        if (player->lastOnEquip > OTSYS_TIME()) {
+            return;
+        }
+
+        player->lastOnEquip = OTSYS_TIME() + 300;
+    }
 
 	bool removed = false;
 	ReturnValue ret = RETURNVALUE_NOERROR;
