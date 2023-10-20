@@ -6,11 +6,6 @@ function buyHouse.onSay(player, words, param)
 		return true
 	end
 
-	if not player:isPremium() then
-		player:sendCancelMessage("You need a premium account.")
-		return false
-	end
-
 	local position = player:getPosition()
 	position:getNextPosition(player:getDirection())
 

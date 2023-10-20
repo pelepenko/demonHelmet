@@ -22,7 +22,7 @@
 
 static constexpr auto STATUS_SERVER_NAME = "Demon Helmet Server";
 static constexpr auto STATUS_SERVER_VERSION = "TFS 1.4";
-static constexpr auto STATUS_SERVER_DEVELOPERS = "Oliveira, Demon Helmet, Mark Samman and The Forgotten Server Developers";
+static constexpr auto STATUS_SERVER_DEVELOPERS = "Demon Helmet, Mark Samman and The Forgotten Server Developers";
 
 static constexpr auto AUTHENTICATOR_DIGITS = 6U;
 static constexpr auto AUTHENTICATOR_PERIOD = 30U;

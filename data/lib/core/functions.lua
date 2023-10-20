@@ -1,4 +1,25 @@
--- From here down are the functions of TFS
+function doWriteLogFileW(file, text) -- substitui a escrita
+    local f = io.open(file, "w+")
+    if not f then
+        return false
+    end
+
+    f:write(text)
+    f:close()
+    return true
+end
+
+function doWriteLogFileA(file, text) -- continua escrendo
+    local f = io.open(file, "a+")
+    if not f then
+        return false
+    end
+
+    f:write(text)
+    f:close()
+    return true
+end
+
 function getTibiaTimerDayOrNight()
 	local light = getWorldLight()
 	if (light == 40) then
@@ -37,17 +58,6 @@ debug.sethook(function(event, line)
 	end
 end, "l")
 
--- OTG-Global functions
-function getJackLastMissionState(player)
-	if player:getStorageValue(Storage.TibiaTales.JackFutureQuest.LastMissionState) == 1 then
-		return "You told Jack the truth about his personality. You also explained that you and Spectulus \z
-		made a mistake by assuming him as the real Jack."
-	else
-		return "You lied to the confused Jack about his true personality. You and Spectulus made him \z
-		believe that he is in fact a completely different person. Now he will never be able to find out the truth."
-	end
-end
-
 function getRateFromTable(t, level, default)
 	for _, rate in ipairs(t) do
 		if level >= rate.minlevel and (not rate.maxlevel or level <= rate.maxlevel) then
@@ -55,6 +65,70 @@ function getRateFromTable(t, level, default)
 		end
 	end
 	return default
+end
+
+function convertTimeToText(segundos)
+    local tempo_em_segundos = segundos
+    local days, hours, minutes, seconds = 0, 0, 0, 0
+
+    while tempo_em_segundos ~= 0 do
+        if tempo_em_segundos >= 86400 then
+            tempo_em_segundos = tempo_em_segundos - 86400
+            days = days + 1
+        elseif tempo_em_segundos >= 3600 then
+            tempo_em_segundos = tempo_em_segundos - 3600
+            hours = hours + 1
+        elseif tempo_em_segundos >= 60 then
+            tempo_em_segundos = tempo_em_segundos - 60
+            minutes = minutes + 1
+        else
+            seconds = tempo_em_segundos
+            tempo_em_segundos = 0
+        end
+    end
+
+    local text = ""
+    if days > 0 then
+        text = text .. days .. (days == 1 and " day " or " days ") .. hours .. " hours " .. minutes .. " minutes and " .. seconds .. " seconds"
+    elseif hours > 0 then
+        text = text .. hours .. " hours " .. minutes .. " minutes and " .. seconds .. " seconds"
+    elseif minutes > 0 then
+        text = text .. minutes .. " minutes and " .. seconds .. " seconds"
+    else
+        text = text .. seconds .. " seconds"
+    end
+    return text
+end
+
+-- script para andar sozinho
+
+-- player:move(Position(1000, 1000, 7))
+-- creature:move(Position(1000, 1000, 7))
+
+-- or
+
+-- local playerMovements = {
+  -- DIRECTION_WEST,
+  -- DIRECTION_NORTH
+-- }
+
+-- for i = 1, #playerMovements do
+  -- player:move(playerMovements[i])
+-- end
+
+-- player:setDirection(DIRECTION_SOUTH)
+
+local cont = 0
+function movePlayer(p)
+  local player = Player(p)
+     if cont <= #MovementsPlayer then
+       player:move(MovementsPlayer[cont])
+       cont = cont + 1
+       addEvent(movePlayer, 500, player.uid)
+     -- else para que termine virado para o sul quando terminar a movimentação
+       -- player:setDirection(DIRECTION_SOUTH)
+       -- addEvent(stoRemove, 3000, player.uid)
+    end
 end
 
 function getAccountNumberByPlayerName(name)
@@ -86,7 +160,7 @@ function getBankMoney(cid, amount)
 	local player = Player(cid)
 	if player:getBankBalance() >= amount then
 		player:setBankBalance(player:getBankBalance() - amount)
-		player:sendTextMessage(MESSAGE_INFO_DESCR, "Paid " .. amount .. " gold from bank account. Your account balance is now " .. player:getBankBalance() .. " gold.")
+		player:sendTextMessage(MESSAGE_TRADE, "Paid " .. amount .. " gold from bank account. Your account balance is now " .. player:getBankBalance() .. " gold.")
 		return true
 	end
 	return false
@@ -237,6 +311,24 @@ function clearForgotten(fromPosition, toPosition, exitPosition, storage)
 		end
 	end
 	Game.setStorageValue(storage, 0)
+end
+
+function clearPlayers(fromPosition, toPosition, exitPosition)
+	for x = fromPosition.x, toPosition.x do
+		for y = fromPosition.y, toPosition.y do
+			for z = fromPosition.z, toPosition.z do
+				if Tile(Position(x, y, z)) then
+					local creature = Tile(Position(x, y, z)):getTopCreature()
+					if creature then
+						if creature:isPlayer() then
+							creature:teleportTo(exitPosition)
+							exitPosition:sendMagicEffect(CONST_ME_TELEPORT)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 function isValidMoney(money)

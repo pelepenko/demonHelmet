@@ -38,14 +38,14 @@ allowClones = false
 serverName = "Demon"
 statusTimeout = 5 * 1000
 replaceKickOnLogin = true
-maxPacketsPerSecond = 25
+maxPacketsPerSecond = 50
 maxItem = 2000
 maxContainer = 100
 
 --- Version
-clientVersion = 1270
-clientVersionStr = "12.70"
-allowClientOld = false
+clientVersion = 1272
+clientVersionStr = "12.72"
+allowClientOld = true
 
 -- Depot Limit
 freeDepotLimit = 2000
@@ -97,7 +97,7 @@ mapCustomEnabled = false
 
 -- Market
 marketOfferDuration = 30 * 24 * 60 * 60
-premiumToCreateMarketOffer = true
+premiumToCreateMarketOffer = false
 checkExpiredMarketOffersEachMinutes = 60
 maxMarketOffersAtATimePerPlayer = 100
 

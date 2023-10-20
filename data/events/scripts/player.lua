@@ -1,4 +1,4 @@
-CONTAINER_WEIGHT_CHECK = true -- true = enable / false = disable
+CONTAINER_WEIGHT_CHECK = false -- true = enable / false = disable
 CONTAINER_WEIGHT_MAX = 1000000 -- 1000000 = 10k = 10000.00 oz
 
 local storeItemID = {
@@ -36,10 +36,9 @@ local storeItemID = {
 	35178, -- carrion casserole
 	35179, -- consecrated beef
 	35180, -- overcooked noodles
+	
+	26377, -- gold pouch
 }
-
--- Capacity imbuement store
-local STORAGE_CAPACITY_IMBUEMENT = 42154
 
 -- Players cannot throw items on teleports if set to true
 local blockTeleportTrashing = true
@@ -734,7 +733,7 @@ function Player:onGainExperience(source, exp, rawExp)
 	if configManager.getBoolean(configKeys.STAMINA_SYSTEM) then
 		useStamina(self)
 		local staminaMinutes = self:getStamina()
-		if staminaMinutes > 2340 and self:isPremium() then
+		if staminaMinutes > 2340 then
 			exp = exp * 1.5
 			self:setStaminaXpBoost(150)
 		elseif staminaMinutes <= 840 then
@@ -817,10 +816,6 @@ function Player:canBeAppliedImbuement(imbuement, item)
 	end
 
 	if isInArray(categories, imbuement:getCategory().id) then
-		return false
-	end
-
-	if imbuement:isPremium() and self:getPremiumDays() < 1 then
 		return false
 	end
 

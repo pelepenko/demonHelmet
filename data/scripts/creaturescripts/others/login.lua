@@ -34,10 +34,11 @@ function playerLogin.onLogin(player)
 			end
 		end
 		player:addItem(2050, 1, true, 1, CONST_SLOT_AMMO)
-	else
-		player:sendTextMessage(MESSAGE_STATUS_DEFAULT, "Welcome to " .. SERVER_NAME .. "!")
-		player:sendTextMessage(MESSAGE_STATUS_DEFAULT, string.format("Your last visit in ".. SERVER_NAME ..": %s.", os.date("%d. %b %Y %X", player:getLastLoginSaved())))
 	end
+	
+	player:sendTextMessage(MESSAGE_STATUS_DEFAULT, "Welcome to " .. SERVER_NAME .. "!")
+	player:sendTextMessage(MESSAGE_STATUS_DEFAULT, string.format("Your last visit in ".. SERVER_NAME ..": %s.", os.date("%d. %b %Y %X", player:getLastLoginSaved())))
+		
 	-- não excluir
 	player:setStorageValue(9921, 1)
 	player:setStorageValue(14900, 1)
